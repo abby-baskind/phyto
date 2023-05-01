@@ -1,7 +1,7 @@
 # phyto
 Narragansett Bay Long Term Phytoplankton Time Series pH analysis
 
-![A test image](/Users/akbaskind/Desktop/YoE/IMG_6436 2.JPG)
+![A test image](C:/Users/akbaskind/Desktop/YoE/IMG_6436 2.JPG)
  
 # `PLT` class
 
