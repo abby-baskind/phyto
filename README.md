@@ -1,5 +1,7 @@
 # phyto
 Narragansett Bay Long Term Phytoplankton Time Series pH analysis
+
+![A test image](/Users/akbaskind/Desktop/YoE/IMG_6436 2.JPG)
  
 # `PLT` class
 
@@ -19,3 +21,6 @@ I've opted to set up [API retrieval for Google sheets](https://towardsdatascienc
 * `requests`
 * `datetime`
 * `math`
+* `gspread` 
+* `oauth2client` 
+* `df2gspread`
