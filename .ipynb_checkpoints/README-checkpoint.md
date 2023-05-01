@@ -2,6 +2,10 @@
 Narragansett Bay Long Term Phytoplankton Time Series pH analysis
 
 ![A test image](C:/Users/akbaskind/Desktop/YoE/IMG_6436 2.JPG)
+
+<p align="center">
+  <img src="/Users/akbaskind/Desktop/YoE/IMG_6436 2.JPG" width="350" title="hover text">
+</p>
  
 # `PLT` class
 
