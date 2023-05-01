@@ -14,3 +14,5 @@ The `PLT` class has a function that ingests Hydrocat sensor data from the Davies
 * `numpy`
 * `xarray`
 * `requests`
+* `datetime`
+* `math`
