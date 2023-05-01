@@ -14,12 +14,16 @@ class PLT():
         
         RETURNS pandas DataFrame
         
-        Add '%run ./PLT.py' to your script, making sure the path is correct
+        Add '%cd directory' and '%run PLT.py' to your script, making sure the path is correct
         """
         import re
         import time
         import PyCO2SYS as pyco2
         import requests
+        import pandas as pd
+        import numpy as np
+        from datetime import datetime, timedelta
+        import math
     
         # Check that start and end dates are formatted correctly
         # Return error message if format is wrong
@@ -50,12 +54,13 @@ class PLT():
         # Ingest data from API
         r = requests.get(URL)
         JSON = r.json()
-        sensor = 'Hydrocat'
-        df = pd.DataFrame(JSON[sensor])
+        df = pd.DataFrame(JSON['Hydrocat'])
     
-        # Drop 0 and negative values
+        # Drop 0 and negative values and nan values
         for ind in df.index:
             if df['hydrocatPH'][ind] <= 0:
+                df = df.drop(ind)
+            elif math.isnan(df['hydrocatPH'][ind]):
                 df = df.drop(ind)
             
         # Get DateTime object from TmStamp string and change time zones from UTC            
