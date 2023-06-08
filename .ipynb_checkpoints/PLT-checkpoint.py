@@ -69,7 +69,32 @@ class PLT():
             df['DateTime'][ind] = datetime.strptime(df['TmStamp'][ind], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(hours = 5)
     
         # Convert pH from NBS to total scale using PyCO2SYS
-        results = pyco2.sys(par1=df['hydrocatPH'], par1_type=3, temperature = df['hydrocatTemperature'], salinity = df['hydrocatSalinity'],opt_pH_scale = 4)
+        results = pyco2.sys(par1=df['hydrocatPH'], par1_type=3, 
+                            temperature = df['hydrocatTemperature'], salinity = df['hydrocatSalinity'],opt_pH_scale = 4)
         df['pH total'] = results['pH_total']
     
         return df
+    
+    def dic_to_uM(dic, S, T):
+        """
+        This function converts from units of umol/kg to uM [umol/L] by calculating density using an equation of state.
+        
+        INPUTS:
+            - DIC or TA in umol/kg
+            - Salinity in PSU
+            - Temperature in degrees C
+        
+        OUTPUTS:
+            - DIC or TA in uM
+        
+        """
+        rho =(999.842594 + 0.06793952*T 
+              - 0.00909529*T**2 
+              + 0.0001001685*T**3  
+              - 0.000001120083*T**4 
+              + 0.000000006536332*T**5 
+              + (0.824493 - 0.0040899*T + 0.000076438*T**2 - 0.00000082467*T**3 + 0.0000000053875*T**4) * S 
+              + (-0.00572466 + 0.00010227*T - 0.0000016546*T**2) * S**(1.5) + 0.00048314*S**2)/1000
+        dic_out = rho * dic
+        
+        return dic_out
