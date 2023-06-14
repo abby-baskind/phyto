@@ -4,7 +4,7 @@ class PLT():
         """
         Retrieve Hydrocat data from Andy Davies' sensors using the API
         Drop 0 or negative pH values
-        Change time zone from UTC to EST (-5 hours)
+        Time zone kept in UTC
         Convert pH from NBS to total scale using PyCO2SYS
         
         INPUTS:
@@ -63,10 +63,11 @@ class PLT():
             elif math.isnan(df['hydrocatPH'][ind]):
                 df = df.drop(ind)
             
-        # Get DateTime object from TmStamp string and change time zones from UTC            
+        # Get DateTime object from TmStamp string 
+        # Keep timezone in UTC
         df['DateTime'] = np.zeros(len(df['TmStamp']))
         for ind in df.index:
-            df['DateTime'][ind] = datetime.strptime(df['TmStamp'][ind], '%Y-%m-%dT%H:%M:%S.%fZ') - timedelta(hours = 5)
+            df['DateTime'][ind] = datetime.strptime(df['TmStamp'][ind], '%Y-%m-%dT%H:%M:%S.%fZ') 
     
         # Convert pH from NBS to total scale using PyCO2SYS
         results = pyco2.sys(par1=df['hydrocatPH'], par1_type=3, 
