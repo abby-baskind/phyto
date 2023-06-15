@@ -64,6 +64,10 @@ class PLT():
                 df = df.drop(ind)
             elif math.isnan(df['hydrocatDissOxygen'][ind]):
                 df = df.drop(ind)
+            elif math.isnan(df['hydrocatSalinity'][ind]):
+                df = df.drop(ind)
+            elif math.isnan(df['hydrocatTemperature'][ind]):
+                df = df.drop(ind)
         df = df.reset_index(drop=True)
             
         # Get DateTime object from TmStamp string 
@@ -233,6 +237,7 @@ class PLT():
         dfout = df[['Sample', 'DateTime', 'Location', 'depth', 'Salinity', 'DIC (umol/kg)', 'TA (umol/kg)', 'pH']]
         
         return dfout
+    
     def get_NBFSMN(googlesheet_url, wks_name):
         
         """
@@ -316,7 +321,7 @@ class PLT():
     
         # # Drop missing data
         for ind in surfaceMV.index:
-            if math.isnan(surfaceMV['surface pH'][ind]) or math.isnan(surfaceMV['surface DO Conc'][ind]):
+            if math.isnan(surfaceMV['surface pH'][ind]) or math.isnan(surfaceMV['surface DO Conc'][ind] or math.isnan(surfaceMV['surface Temp'][ind] or math.isnan(surfaceMV['surface Salinity'][ind]):
                 surfaceMV = surfaceMV.drop(ind)
         surfaceMV = surfaceMV.reset_index(drop=True)
         # # --------------------------------------------------------------------------------------------------------
