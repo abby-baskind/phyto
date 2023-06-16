@@ -4,8 +4,10 @@ Narragansett Bay Long Term Phytoplankton Time Series pH analysis
 ![The bay!](bay.JPG)
 
 Most recent analysis can be viewed in `TimeSeriesAnalysis_8May2023.ipynb`.
-![Time Series - trunk](prelim_pH_literallyeverything_trunk.png)
 ![Time Series](prelim_pH_literallyeverything.png)
+![Time Series](QP_Buoy620_PLT.png)
+![Time Series](MV_Buoy720_GB.png)
+![Time Series](lab_minus_davies_anoms.png)
 
 
 # Data
