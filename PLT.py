@@ -412,3 +412,31 @@ class PLT():
             df['DateTime'][ind] = datetime.strptime(df['TmStamp'][ind], '%Y-%m-%dT%H:%M:%S.%fZ') 
     
         return df
+    
+    def o2sat(S,T):
+        """
+        CALCULATE OXYGEN CONCENTRATION AT SATURATION        
+        adapted from o2sat.m by: Edward T Peltzer, MBARI (revised 2007 Apr 26)
+
+        Source: The solubility of nitrogen, oxygen and argon in water and seawater - Weiss (1970) Deep Sea Research V17(4): 721-735.
+
+        Molar volume of oxygen at STP obtained from NIST website on the thermophysical properties of fluid systems:
+        http://webbook.nist.gov/chemistry/fluid/
+
+        Inputs: 
+        S = Salinity (PSU)
+        T = Temperature (degC)
+
+        Outputs:
+            Oxygen saturation at one atmosphere (umol/kg)
+        """
+        import numpy as np
+        T1 = (T + 273.15) / 100
+
+        OSAT = -177.7888 + 255.5907 / T1 + 146.4813 * np.log(T1) - 22.2040 * T1
+        OSAT = OSAT + S * (-0.037362 + T1 * (0.016504 - 0.0020564 * T1))
+        OSAT = np.exp(OSAT)
+
+        #     Convert from ml/kg to um/kg
+        O2 = OSAT * 1000 / 22.392
+        return O2
