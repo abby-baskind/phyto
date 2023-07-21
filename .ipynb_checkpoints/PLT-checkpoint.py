@@ -130,6 +130,7 @@ class PLT():
             - DIC [umol/kg]
             - TA [umol/kg]
             - Salinity
+            - In Situ Temperature [degC]
             - pH in total scale
         
         Add '%cd directory' and '%run PLT.py' to your script, making sure the path is correct
@@ -183,18 +184,19 @@ class PLT():
         # I've also found that often when pulling from Google Sheets, all the data is written as strings, 
         # so here we also convert our data to appropriate data types.
         df = labdata[['Sample', 'Time', 'Location', 'depth', 'TA Temp (degC)', 'TA (uM)',
-                      'DIC Temp (degC)', 'DIC (uM)', 'Salinity']]
+                      'DIC Temp (degC)', 'DIC (uM)', 'Salinity', 'In Situ Temperature']]
         df['TA (uM)'] = pd.to_numeric(df['TA (uM)'])
         df['TA Temp (degC)'] = pd.to_numeric(df['TA Temp (degC)'])
         df['DIC (uM)'] = pd.to_numeric(df['DIC (uM)'])
         df['DIC Temp (degC)'] = pd.to_numeric(df['DIC Temp (degC)'])
         df['Salinity'] = pd.to_numeric(df['Salinity'])
+        df['In Situ Temperature'] = pd.to_numeric(df['In Situ Temperature'])
         df["DateTime"] = pd.to_datetime(df["Time"])
     
         # # Drop missing data
         for ind in df.index:
-            # if TA or DIC or salinity at that index is Nan/empty...
-            if math.isnan(df['TA (uM)'][ind]) or math.isnan(df['DIC (uM)'][ind]) or math.isnan(df['Salinity'][ind]):
+            # if TA or DIC or salinity or in situ tempertuare at that index is Nan/empty...
+            if math.isnan(df['TA (uM)'][ind]) or math.isnan(df['DIC (uM)'][ind]) or math.isnan(df['Salinity'][ind]) or math.isnan(df['In Situ Temperature'][ind]):                                                                      
                 # Drop that index
                 df = df.drop(ind)
         # # --------------------------------------------------------------------------------------------------------
@@ -231,10 +233,10 @@ class PLT():
     
         # Calculate pH with PyCO2SYS
         results = pyco2.sys(par1=df['TA (umol/kg)'],par2=df['DIC (umol/kg)'],par1_type=1,par2_type=2,
-                            salinity = df['Salinity'], temperature = df['DIC Temp (degC)'])
+                            salinity = df['Salinity'], temperature = df['In Situ Temperature'])
         df['pH'] = results['pH']
         # # --------------------------------------------------------------------------------------------------------
-        dfout = df[['Sample', 'DateTime', 'Location', 'depth', 'Salinity', 'DIC (umol/kg)', 'TA (umol/kg)', 'pH']]
+        dfout = df[['Sample', 'DateTime', 'Location', 'depth', 'Salinity', 'In Situ Temperature', 'DIC (umol/kg)', 'TA (umol/kg)', 'pH']]
         
         return dfout
     
