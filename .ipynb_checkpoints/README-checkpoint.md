@@ -1,21 +1,3 @@
-<style TYPE="text/css">
-code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
-</style>
-<script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'] // removed 'code' entry
-    }
-});
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i = 0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';
-    }
-});
-</script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML-full"></script>
 
 # phyto
 Narragansett Bay Long Term Phytoplankton Time Series pH analysis
@@ -91,12 +73,4 @@ With just over a year of data, we have *just* enough data to begin examining the
 
 We have attempted to separate the various drivers of pH in Narragansett Bay into several components: temperature, salinity, mixing of alkalinity, biological production of alkalinity, biological production of DIC, mixing of DIC, and air-sea fluxes of DIC. We converted pH to H+ concentration to avoid issues with logarithms, and modelled the components as follows, based on Kwiatokowski and Orr:
 
-$$
-\Delta [\text{H}^+] \approx \frac{\partial [\text{H}^+]}{\partial \text{T}} \Delta \text{T} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{S}} \Delta \text{S} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{mix}} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{bio}} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{bio}} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{flux}} 
-+ \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{mix}} 
-$$
+$$\Delta [\text{H}^+] \approx \frac{\partial [\text{H}^+]}{\partial \text{T}} \Delta \text{T} + \frac{\partial [\text{H}^+]}{\partial \text{S}} \Delta \text{S} + \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{mix}} + \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{bio}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{bio}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{flux}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{mix}}$$
