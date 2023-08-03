@@ -49,8 +49,8 @@ First, I plotted the discrete change in pH at the time of precipitation over tim
 ![Hydrocat 720](H720_fromrain.png)
 
 Then, I plotted the change in pH over the 24 hours following the rain event over time for both Hydrocat 620 and Hydrocat 720. The colormap corresponds to the amount of precipitation. Similarly, the mean change in pH during the rain event, with standard error, is effectively 0 for both sensors, suggesting rain has no delayed impact on pH, at least within 24 hours. Indeed, I tried this with other time intervals, namely 12 and 48 hours, and similarly no significant change in pH manifested.
-![Hydrocat 620](H620_fromrain.png)
-![Hydrocat 720](H720_fromrain.png)
+![Hydrocat 620](H620_24hr_afterrain.png)
+![Hydrocat 720](H720_24hr_afterrain.png)
 
 We can also get a perspective of pH following rain looking directly at the time series. The full time series of pH for each sensor is in red. The measurement intervals with the most precipitation are in blue. Intervals 24 hours after the rainiest intervals are in green. From this coarse perspective, we do not consistently see either increased on decreased pH measurements following rain. 
 ![Hydrocat 620](H620_rain.png)
