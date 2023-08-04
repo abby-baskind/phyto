@@ -270,7 +270,7 @@ class decomposition():
         # molC/m2/month or molC/m2/day or...
         fgco2_month = fgco2_ann/t
         # Assumed mixed layer depth of 9m
-        MLD = 9
+        # MLD = 9
         # Density [kg/m3]
         rho = gsw.rho(MN['Salinity [PSU]'].to_numpy(), MN['Temperature [degC]'].to_numpy(), np.zeros(len(MN)))
         # umolC/kg/month
