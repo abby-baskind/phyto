@@ -1,5 +1,5 @@
 class decomposition():
-    def decomposition(df, timeslice):
+    def decomposition(df, timeslice, location = None):
         
         """
         This function breaks down the change in [H+] into various drivers:
@@ -124,22 +124,32 @@ class decomposition():
         if not 'pH final' in df.keys():
             print('Please ensure your dataframe has a column for pH named "pH final".')
             return
+        # # Location
+        if location == 'PLT':
+            MLD = 7
+        elif location == 'GB':
+            MLD = 9
+        else:
+            MLD = 8
         # -------------------------------------------------------------------------------------------------
     
         # ************************************************************************************************* 
     
         # Take daily/weekly/monthly/yearly mean and standard error-----------------------------------------
-        MN = df.resample(timeslice, on='DateTime').mean()
-        STD = df.resample(timeslice, on='DateTime').std(ddof = 1)
+        df['Alkalinity [umol/kg]'] = 477.62 + 51.99 * df['Salinity [PSU]']
+        MN = df.resample(timeslice, on='DateTime').mean()            # MN contains daily/monthly means
+        STD = df.resample(timeslice, on='DateTime').std(ddof = 1)    # STD contains stan devs of means
+        count = df.resample(timeslice, on='DateTime').count()        # N for each mean
+        COUNT = count['DateTime']
         # -------------------------------------------------------------------------------------------------
     
         # ************************************************************************************************* 
     
         # Optional input for wind speed--------------------------------------------------------------------
-        # # If wind speed not provided, default U10 to 3 m/s
+        # # If wind speed not provided, default U10 to t m/s
         if not 'avgWindSpeed' in MN.keys():
-            print('Your dataframe does not include a column for wind speed labeled as "avgWindSpeed." Default U10 wind speed is set to 3 m/s.')
-            U10 = 3
+            print('Your dataframe does not include a column for wind speed labeled as "avgWindSpeed." Default U10 wind speed is set to 5 m/s.')
+            U10 = 5
         # # If wind speed is provided, use that for U10 speed
         else:
             U10 = MN['avgWindSpeed']
@@ -150,7 +160,23 @@ class decomposition():
         # pH ERROR-----------------------------------------------------------------------------------------
         # # Calculate error in pH arising from both instrumental error and error from averaging
         STD['pH instrumemnt error'] = 0.1
-        STD['pH total error'] = np.sqrt(STD['pH final']**2 + STD['pH instrumemnt error']**2)
+        ERR_PH = 0.1/(np.sqrt(COUNT))
+        STD['pH total error'] = np.sqrt(STD['pH final']**2 + ERR_PH**2)
+        # np.sqrt(STD['pH final']**2 + STD['pH instrumemnt error']**2)
+        # -------------------------------------------------------------------------------------------------
+        
+        # Temperature + Salinity ERROR---------------------------------------------------------------------
+        # # Calculate error in T and S arising from both instrumental error and error from averaging
+        ERR_T = 0.01/(np.sqrt(COUNT))
+        STD['Temperature [degC]'] = np.sqrt(STD['Temperature [degC]']**2 + ERR_T**2)
+        ERR_S = 0.01/(np.sqrt(COUNT))
+        STD['Salinity [PSU]'] =np.sqrt(STD['Salinity [PSU]']**2 + ERR_T**2)
+        # -------------------------------------------------------------------------------------------------
+        
+        # TA ERROR-----------------------------------------------------------------------------------------
+        # # Calculate error in TA arising from both instrumental error and error from averaging
+        ERR_TA = 10/(np.sqrt(COUNT))
+        STD['Alkalinity [umol/kg]'] = np.sqrt(STD['Alkalinity [umol/kg]']**2 + ERR_TA**2)
         # -------------------------------------------------------------------------------------------------
     
         # ************************************************************************************************* 
@@ -158,16 +184,14 @@ class decomposition():
         # SOLVE CARBONATE SYSTEM---------------------------------------------------------------------------
         pH = MN['pH final']                             # pH
         dpH = STD['pH total error']                     # pH error
-        dT = STD['Temperature [degC]']                  # Temperature error (from averaging)
-        dS = STD['Salinity [PSU]']                      # Salinity error (from averaging)
+        dT = STD['Temperature [degC]']                  # Temperature error
+        dS = STD['Salinity [PSU]']                      # Salinity error 
         S = MN['Salinity [PSU]']                        # Salinity
         T = MN['Temperature [degC]']                    # Temperature
     
-        # Alkalinity calculation
-        TA = 477.62 + 51.99 * MN['Salinity [PSU]']      # Pimenta et al., 2023    
-        MN['Alkalinity [umol/kg]'] = TA                 # Alkalinity
-        dTA = dS * 51.99                                # Alkalinity error (arising from salinity average)
-        STD['Alkalinity'] = dTA                         # Alkalinity error
+        # Alkalinity calculation   
+        TA = MN['Alkalinity [umol/kg]']                 # Alkalinity
+        dTA = STD['Alkalinity [umol/kg]']               # Alkalinity error (arising from salinity average)
 
         results = pyco2.sys(par1 = TA, par2 = pH, par1_type = 1, par2_type = 3, temperature = T, salinity = S,
                             # Calculate uncertainities of...
@@ -196,6 +220,7 @@ class decomposition():
                             # In terms of par1 (which is DIC)
                             grads_wrt=["par1", 'temperature', 'salinity', 'par2'],
                             uncertainty_into =["pCO2", "Hfree"],
+                            # Uncertainty from DIC already includes uncertainty from T, S, pH, and TA
                             uncertainty_from ={"par1": dDIC})
 
         MN['∂H/∂DIC'] = results['d_Hfree__d_par1']      # ∂H/∂DIC
@@ -278,13 +303,13 @@ class decomposition():
         # *************************************************************************************************
     
         # Calculate components-----------------------------------------------------------------------------
-        temp = MN['∂H/∂T'] * MN['∆T']                          # Temperature
-        sal = MN['∂H/∂S'] * MN['∆S']                           # salinity
-        alk_mix = MN['∂H/∂TA'] * MN['∆TA_mix [umolC/L]']       # TA mixing
-        alk_bio = MN['∂H/∂TA'] * MN['∆TA_bio [umolC/L]']       # TA bio
-        dic_bio = MN['∂H/∂DIC'] * MN['∆DIC_bio [umolC/L]']     # DIC bio
-        ASF = MN['∂H/∂DIC'] * MN['∆DIC_flux [umolC/L]']        # DIC air sea flux
-        dic_mix = MN['∂H/∂DIC'] * MN['∆DIC_mix']               # DIC mixing
+        temp = MN['∂H/∂T'] * MN['∆T']                          # Temperature: ∂H/∂T * ∆T
+        sal = MN['∂H/∂S'] * MN['∆S']                           # salinity: ∂H/∂S * ∆S
+        alk_mix = MN['∂H/∂TA'] * MN['∆TA_mix [umolC/L]']       # TA mixing: ∂H/∂TA * ∆TAmix
+        alk_bio = MN['∂H/∂TA'] * MN['∆TA_bio [umolC/L]']       # TA bio: ∂H/∂TA * ∆TAbio
+        dic_bio = MN['∂H/∂DIC'] * MN['∆DIC_bio [umolC/L]']     # DIC bio: ∂H/∂DIC * ∆DICbio
+        ASF = MN['∂H/∂DIC'] * MN['∆DIC_flux [umolC/L]']        # DIC air sea flux: ∂H/∂DIC * ∆DICflux
+        dic_mix = MN['∂H/∂DIC'] * MN['∆DIC_mix']               # DIC mixing: ∂H/∂DIC * ∆DICmix
         BIO = dic_bio + alk_bio                                # Total bio = DIC bio + TA bio
         MIX = dic_mix + alk_mix                                # Total mixing = DIC mixing + TA mixing
         TOT = temp + sal + ASF + BIO + MIX                     # Total
@@ -324,9 +349,9 @@ class decomposition():
                                              + (STD['H+ [umol/kg]']/MN['H+ [umol/kg]'])**2)
         YERR['Salinity'] = sal * np.sqrt((STD['Salinity [PSU]']/MN['Salinity [PSU]'])**2
                                          + (STD['H+ [umol/kg]']/MN['H+ [umol/kg]'])**2)
-        YERR['TA mixing'] = alk_mix * np.sqrt((STD['Alkalinity']/MN['Alkalinity [umol/kg]'])**2
+        YERR['TA mixing'] = alk_mix * np.sqrt((STD['Alkalinity [umol/kg]']/MN['Alkalinity [umol/kg]'])**2
                                               + (STD['H+ [umol/kg]']/MN['H+ [umol/kg]'])**2)
-        YERR['TA bio'] = alk_bio * np.sqrt((STD['Alkalinity']/MN['Alkalinity [umol/kg]'])**2
+        YERR['TA bio'] = alk_bio * np.sqrt((STD['Alkalinity [umol/kg]']/MN['Alkalinity [umol/kg]'])**2
                                            + (STD['H+ [umol/kg]']/MN['H+ [umol/kg]'])**2)
         YERR['DIC bio'] = dic_bio * np.sqrt((STD['DIC [umol/kg]']/MN['DIC [umol/kg]'])**2
                                             + (STD['H+ [umol/kg]']/MN['H+ [umol/kg]'])**2)
