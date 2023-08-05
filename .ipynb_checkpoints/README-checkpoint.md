@@ -73,4 +73,6 @@ With just over a year of data, we have *just* enough data to begin examining the
 
 We have attempted to separate the various drivers of pH in Narragansett Bay into several components: temperature, salinity, mixing of alkalinity, biological production of alkalinity, biological production of DIC, mixing of DIC, and air-sea fluxes of DIC. We converted pH to H+ concentration to avoid issues with logarithms, and modelled the components as follows, based on Kwiatokowski and Orr:
 
-$$\Delta [\text{H}^+] \approx \frac{\partial [\text{H}^+]}{\partial \text{T}} \Delta \text{T} + \frac{\partial [\text{H}^+]}{\partial \text{S}} \Delta \text{S} + \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{mix}} + \frac{\partial [\text{H}^+]}{\partial \text{TA}} \Delta \text{TA}_{\text{bio}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{bio}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{flux}} + \frac{\partial [\text{H}^+]}{\partial \text{DIC}} \Delta \text{DIC}_{\text{mix}}$$
+The figure below shows the results of this separation of drivers.
+
+![pH Drivers](ALL_components.png)
