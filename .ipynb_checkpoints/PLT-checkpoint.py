@@ -191,7 +191,7 @@ class PLT():
         df['DIC Temp (degC)'] = pd.to_numeric(df['DIC Temp (degC)'])
         df['Salinity'] = pd.to_numeric(df['Salinity'])
         df['In Situ Temperature'] = pd.to_numeric(df['In Situ Temperature'])
-        df["DateTime"] = pd.to_datetime(df["Time"])
+        df["DateTime"] = pd.to_datetime(df["Time"], errors = 'coerce')
     
         # # Drop missing data
         for ind in df.index:
